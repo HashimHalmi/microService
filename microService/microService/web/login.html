@@ -1,0 +1,175 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Login</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Login</h1>-->
+<!--<form id="loginForm">-->
+<!--    <label for="email">Email:</label>-->
+<!--    <input type="email" id="email" required>-->
+<!--    <label for="password">Password:</label>-->
+<!--    <input type="password" id="password" required>-->
+<!--    <button type="submit">Login</button>-->
+<!--</form>-->
+<!--<script>-->
+<!--    document.getElementById('loginForm').addEventListener('submit', function(event) {-->
+<!--        event.preventDefault();-->
+<!--        fetch('/login', {-->
+<!--            method: 'POST',-->
+<!--            headers: {-->
+<!--                'Content-Type': 'application/json'-->
+<!--            },-->
+<!--            body: JSON.stringify({-->
+<!--                email: document.getElementById('email').value,-->
+<!--                password: document.getElementById('password').value-->
+<!--            })-->
+<!--        }).then(response => {-->
+<!--            if(response.ok) {-->
+<!--                return response.headers.get('Authorization').replace('Bearer ', '');-->
+<!--            } else {-->
+<!--                throw new Error('Login failed!');-->
+<!--            }-->
+<!--        }).then(token => {-->
+<!--            if (token) {-->
+<!--                console.log('Token received:', token);-->
+<!--                localStorage.setItem('token', token);-->
+<!--                alert('Login successful!');-->
+<!--                window.location.href = 'home.html';-->
+<!--            }-->
+<!--        }).catch(error => {-->
+<!--            alert(error.message);-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            background-color: #003f7f;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            form {
+                padding: 15px;
+            }
+
+            button {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>Login</h1>
+<form id="loginForm">
+    <label for="email">Email:</label>
+    <input type="email" id="email" required>
+    <label for="password">Password:</label>
+    <input type="password" id="password" required>
+    <button type="submit">Login</button>
+</form>
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            })
+        }).then(response => {
+            if(response.ok) {
+                return response.headers.get('Authorization').replace('Bearer ', '');
+            } else {
+                throw new Error('Login failed!');
+            }
+        }).then(token => {
+            if (token) {
+                console.log('Token received:', token);
+                localStorage.setItem('token', token);
+                alert('Login successful!');
+                window.location.href = 'cart.html';
+            }
+        }).catch(error => {
+            alert(error.message);
+        });
+    });
+</script>
+</body>
+</html>

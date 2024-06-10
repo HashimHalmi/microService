@@ -1,0 +1,637 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Payment</title>-->
+<!--    <style>-->
+<!--        table {-->
+<!--            width: 100%;-->
+<!--            border-collapse: collapse;-->
+<!--        }-->
+
+<!--        table, th, td {-->
+<!--            border: 1px solid black;-->
+<!--        }-->
+
+<!--        th, td {-->
+<!--            padding: 10px;-->
+<!--            text-align: left;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Payment</h1>-->
+
+<!--<h2>Items to Pay</h2>-->
+<!--<div id="transactionItems">-->
+<!--    <table>-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>Product ID</th>-->
+<!--            <th>Quantity</th>-->
+<!--            <th>Price</th>-->
+<!--            <th>Total</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody id="transactionItemsBody">-->
+<!--        &lt;!&ndash; Items will be appended here &ndash;&gt;-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
+
+<!--<h2>Payment Details</h2>-->
+<!--<form id="paymentForm">-->
+<!--    <label for="cardNumber">Card Number:</label>-->
+<!--    <input type="text" id="cardNumber" required>-->
+<!--    <br>-->
+<!--    <label for="expirationDate">Expiration Date:</label>-->
+<!--    <input type="text" id="expirationDate" required>-->
+<!--    <br>-->
+<!--    <label for="cvv">CVV:</label>-->
+<!--    <input type="text" id="cvv" required>-->
+<!--    <br>-->
+<!--    <label for="name">Name:</label>-->
+<!--    <input type="text" id="name" required>-->
+<!--    <br>-->
+<!--    <label for="address">Address:</label>-->
+<!--    <input type="text" id="address" required>-->
+<!--    <br>-->
+<!--    <button type="submit">Pay</button>-->
+<!--</form>-->
+
+<!--<script>-->
+<!--    function fetchTransactionItems() {-->
+<!--        const token = localStorage.getItem('token');-->
+<!--        fetch('/api/transaction/pending', {-->
+<!--            method: 'GET',-->
+<!--            headers: {-->
+<!--                'Authorization': 'Bearer ' + token-->
+<!--            }-->
+<!--        }).then(response => {-->
+<!--            if (response.ok) {-->
+<!--                return response.json();-->
+<!--            } else {-->
+<!--                return response.text().then(text => { throw new Error(text); });-->
+<!--            }-->
+<!--        }).then(data => {-->
+<!--            const transactionItemsBody = document.getElementById('transactionItemsBody');-->
+<!--            transactionItemsBody.innerHTML = '';-->
+<!--            let grandTotal = 0;-->
+<!--            data.Items.forEach(item => {-->
+<!--                const total = item.quantity * item.price;-->
+<!--                grandTotal += total;-->
+<!--                const row = document.createElement('tr');-->
+<!--                row.innerHTML = `-->
+<!--                    <td>${item.product_id}</td>-->
+<!--                    <td>${item.quantity}</td>-->
+<!--                    <td>${item.price.toFixed(2)}</td>-->
+<!--                    <td>${total.toFixed(2)}</td>-->
+<!--                `;-->
+<!--                transactionItemsBody.appendChild(row);-->
+<!--            });-->
+<!--            const totalRow = document.createElement('tr');-->
+<!--            totalRow.innerHTML = `-->
+<!--                <td colspan="3"><strong>Total</strong></td>-->
+<!--                <td><strong>${grandTotal.toFixed(2)}</strong></td>-->
+<!--            `;-->
+<!--            transactionItemsBody.appendChild(totalRow);-->
+<!--        }).catch(error => {-->
+<!--            console.error('Error fetching transaction items:', error);-->
+<!--            alert('Failed to fetch transaction items: ' + error.message);-->
+<!--        });-->
+<!--    }-->
+
+<!--    document.getElementById('paymentForm').addEventListener('submit', function(event) {-->
+<!--        event.preventDefault();-->
+<!--        const token = localStorage.getItem('token');-->
+
+<!--        fetch('/api/transaction/pay', {-->
+<!--            method: 'POST',-->
+<!--            headers: {-->
+<!--                'Content-Type': 'application/json',-->
+<!--                'Authorization': 'Bearer ' + token-->
+<!--            },-->
+<!--            body: JSON.stringify({-->
+<!--                cardNumber: document.getElementById('cardNumber').value,-->
+<!--                expirationDate: document.getElementById('expirationDate').value,-->
+<!--                cvv: document.getElementById('cvv').value,-->
+<!--                name: document.getElementById('name').value,-->
+<!--                address: document.getElementById('address').value-->
+<!--            })-->
+<!--        }).then(response => {-->
+<!--            if (response.ok) {-->
+<!--                return response.json();-->
+<!--            } else {-->
+<!--                return response.text().then(text => { throw new Error(text); });-->
+<!--            }-->
+<!--        }).then(data => {-->
+<!--            if (data.redirect) {-->
+<!--                window.location.href = data.redirect;-->
+<!--            } else {-->
+<!--                throw new Error('Unexpected response format');-->
+<!--            }-->
+<!--        }).catch(error => {-->
+<!--            console.error('Payment failed:', error);-->
+<!--            alert('Payment failed: ' + error.message);-->
+<!--        });-->
+<!--    });-->
+
+<!--    window.onload = fetchTransactionItems;-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Payment</title>-->
+<!--    <style>-->
+<!--        body {-->
+<!--            font-family: 'Arial', sans-serif;-->
+<!--            margin: 0;-->
+<!--            padding: 20px;-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            align-items: center;-->
+<!--            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);-->
+<!--            color: #333;-->
+<!--        }-->
+
+<!--        .container {-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            align-items: center;-->
+<!--            width: 100%;-->
+<!--            max-width: 800px;-->
+<!--            padding: 20px;-->
+<!--        }-->
+
+<!--        .section {-->
+<!--            width: 100%;-->
+<!--            background-color: #fff;-->
+<!--            padding: 20px;-->
+<!--            border-radius: 10px;-->
+<!--            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+
+<!--        h1 {-->
+<!--            font-size: 2.5em;-->
+<!--            margin-bottom: 20px;-->
+<!--            text-align: center;-->
+<!--        }-->
+
+<!--        h2 {-->
+<!--            font-size: 2em;-->
+<!--            margin-bottom: 10px;-->
+<!--            text-align: center;-->
+<!--        }-->
+
+<!--        table {-->
+<!--            width: 100%;-->
+<!--            border-collapse: collapse;-->
+<!--            margin-top: 20px;-->
+<!--            background-color: #fff; /* Установите белый фон, чтобы таблица не была прозрачной */-->
+<!--        }-->
+
+<!--        table, th, td {-->
+<!--            border: 1px solid #ddd;-->
+<!--        }-->
+
+<!--        th, td {-->
+<!--            padding: 10px;-->
+<!--            text-align: left;-->
+<!--        }-->
+
+<!--        th {-->
+<!--            background-color: #f8f8f8;-->
+<!--            font-weight: bold;-->
+<!--        }-->
+
+<!--        input[type="text"] {-->
+<!--            width: calc(100% - 20px);-->
+<!--            padding: 10px;-->
+<!--            margin-bottom: 15px;-->
+<!--            border: 1px solid #ddd;-->
+<!--            border-radius: 5px;-->
+<!--            font-size: 1em;-->
+<!--        }-->
+
+<!--        button {-->
+<!--            padding: 10px 20px;-->
+<!--            border: none;-->
+<!--            border-radius: 5px;-->
+<!--            cursor: pointer;-->
+<!--            background-color: #28a745;-->
+<!--            color: white;-->
+<!--            font-size: 1em;-->
+<!--            transition: background-color 0.3s;-->
+<!--        }-->
+
+<!--        button:hover {-->
+<!--            background-color: #218838;-->
+<!--        }-->
+
+<!--        button:active {-->
+<!--            background-color: #1e7e34;-->
+<!--        }-->
+
+<!--        @media (max-width: 600px) {-->
+<!--            h1, h2 {-->
+<!--                font-size: 1.5em;-->
+<!--            }-->
+
+<!--            .section {-->
+<!--                padding: 15px;-->
+<!--            }-->
+
+<!--            th, td {-->
+<!--                padding: 8px;-->
+<!--            }-->
+
+<!--            button {-->
+<!--                font-size: 0.9em;-->
+<!--            }-->
+<!--        }-->
+
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Payment</h1>-->
+
+<!--<h2>Items to Pay</h2>-->
+<!--<div id="transactionItems">-->
+<!--    <table>-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>Product ID</th>-->
+<!--            <th>Quantity</th>-->
+<!--            <th>Price</th>-->
+<!--            <th>Total</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody id="transactionItemsBody">-->
+<!--        &lt;!&ndash; Items will be appended here &ndash;&gt;-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
+
+<!--<h2>Payment Details</h2>-->
+<!--<form id="paymentForm">-->
+<!--    <label for="cardNumber">Card Number:</label>-->
+<!--    <input type="text" id="cardNumber" required>-->
+<!--    <br>-->
+<!--    <label for="expirationDate">Expiration Date:</label>-->
+<!--    <input type="text" id="expirationDate" required>-->
+<!--    <br>-->
+<!--    <label for="cvv">CVV:</label>-->
+<!--    <input type="text" id="cvv" required>-->
+<!--    <br>-->
+<!--    <label for="name">Name:</label>-->
+<!--    <input type="text" id="name" required>-->
+<!--    <br>-->
+<!--    <label for="address">Address:</label>-->
+<!--    <input type="text" id="address" required>-->
+<!--    <br>-->
+<!--    <button type="submit">Pay</button>-->
+<!--</form>-->
+
+<!--<script>-->
+<!--    function fetchTransactionItems() {-->
+<!--        const token = localStorage.getItem('token');-->
+<!--        fetch('/api/transaction/pending', {-->
+<!--            method: 'GET',-->
+<!--            headers: {-->
+<!--                'Authorization': 'Bearer ' + token-->
+<!--            }-->
+<!--        }).then(response => {-->
+<!--            if (response.ok) {-->
+<!--                return response.json();-->
+<!--            } else {-->
+<!--                return response.text().then(text => { throw new Error(text); });-->
+<!--            }-->
+<!--        }).then(data => {-->
+<!--            const transactionItemsBody = document.getElementById('transactionItemsBody');-->
+<!--            transactionItemsBody.innerHTML = '';-->
+<!--            let grandTotal = 0;-->
+<!--            data.Items.forEach(item => {-->
+<!--                const total = item.quantity * item.price;-->
+<!--                grandTotal += total;-->
+<!--                const row = document.createElement('tr');-->
+<!--                row.innerHTML = `-->
+<!--                    <td>${item.product_id}</td>-->
+<!--                    <td>${item.quantity}</td>-->
+<!--                    <td>${item.price.toFixed(2)}</td>-->
+<!--                    <td>${total.toFixed(2)}</td>-->
+<!--                `;-->
+<!--                transactionItemsBody.appendChild(row);-->
+<!--            });-->
+<!--            const totalRow = document.createElement('tr');-->
+<!--            totalRow.innerHTML = `-->
+<!--                <td colspan="3"><strong>Total</strong></td>-->
+<!--                <td><strong>${grandTotal.toFixed(2)}</strong></td>-->
+<!--            `;-->
+<!--            transactionItemsBody.appendChild(totalRow);-->
+<!--        }).catch(error => {-->
+<!--            console.error('Error fetching transaction items:', error);-->
+<!--            alert('Failed to fetch transaction items: ' + error.message);-->
+<!--        });-->
+<!--    }-->
+
+<!--    document.getElementById('paymentForm').addEventListener('submit', function(event) {-->
+<!--        event.preventDefault();-->
+<!--        const token = localStorage.getItem('token');-->
+
+<!--        fetch('/api/transaction/pay', {-->
+<!--            method: 'POST',-->
+<!--            headers: {-->
+<!--                'Content-Type': 'application/json',-->
+<!--                'Authorization': 'Bearer ' + token-->
+<!--            },-->
+<!--            body: JSON.stringify({-->
+<!--                cardNumber: document.getElementById('cardNumber').value,-->
+<!--                expirationDate: document.getElementById('expirationDate').value,-->
+<!--                cvv: document.getElementById('cvv').value,-->
+<!--                name: document.getElementById('name').value,-->
+<!--                address: document.getElementById('address').value-->
+<!--            })-->
+<!--        }).then(response => {-->
+<!--            if (response.ok) {-->
+<!--                return response.json();-->
+<!--            } else {-->
+<!--                return response.text().then(text => { throw new Error(text); });-->
+<!--            }-->
+<!--        }).then(data => {-->
+<!--            if (data.redirect) {-->
+<!--                window.location.href = data.redirect;-->
+<!--            } else {-->
+<!--                throw new Error('Unexpected response format');-->
+<!--            }-->
+<!--        }).catch(error => {-->
+<!--            console.error('Payment failed:', error);-->
+<!--            alert('Payment failed: ' + error.message);-->
+<!--        });-->
+<!--    });-->
+
+<!--    window.onload = fetchTransactionItems;-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        .section {
+            width: 100%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff; /* Установите белый фон, чтобы таблица не была прозрачной */
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #28a745;
+            color: white;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        button:active {
+            background-color: #1e7e34;
+        }
+
+        @media (max-width: 600px) {
+            h1, h2 {
+                font-size: 1.5em;
+            }
+
+            .section {
+                padding: 15px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            button {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Payment</h1>
+
+    <div class="section">
+        <h2>Items to Pay</h2>
+        <div id="transactionItems">
+            <table>
+                <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+                </thead>
+                <tbody id="transactionItemsBody">
+                <!-- Items will be appended here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Payment Details</h2>
+        <form id="paymentForm">
+            <label for="cardNumber">Card Number:</label>
+            <input type="text" id="cardNumber" required>
+            <br>
+            <label for="expirationDate">Expiration Date:</label>
+            <input type="text" id="expirationDate" required>
+            <br>
+            <label for="cvv">CVV:</label>
+            <input type="text" id="cvv" required>
+            <br>
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+            <br>
+            <label for="address">Address:</label>
+            <input type="text" id="address" required>
+            <br>
+            <button type="submit">Pay</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const productNames = {
+        1: 'Bread',
+        2: 'Milk',
+        3: 'Chocolate'
+    };
+
+    function fetchTransactionItems() {
+        const token = localStorage.getItem('token');
+        fetch('/api/transaction/pending', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text().then(text => { throw new Error(text); });
+            }
+        }).then(data => {
+            const transactionItemsBody = document.getElementById('transactionItemsBody');
+            transactionItemsBody.innerHTML = '';
+            let grandTotal = 0;
+            data.Items.forEach(item => {
+                const total = item.quantity * item.price;
+                grandTotal += total;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.product_id}</td>
+                    <td>${productNames[item.product_id]}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.price.toFixed(2)}</td>
+                    <td>${total.toFixed(2)}</td>
+                `;
+                transactionItemsBody.appendChild(row);
+            });
+            const totalRow = document.createElement('tr');
+            totalRow.innerHTML = `
+                <td colspan="4"><strong>Total</strong></td>
+                <td><strong>${grandTotal.toFixed(2)}</strong></td>
+            `;
+            transactionItemsBody.appendChild(totalRow);
+        }).catch(error => {
+            console.error('Error fetching transaction items:', error);
+            alert('Failed to fetch transaction items: ' + error.message);
+        });
+    }
+
+    document.getElementById('paymentForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const token = localStorage.getItem('token');
+
+        fetch('/api/transaction/pay', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+                cardNumber: document.getElementById('cardNumber').value,
+                expirationDate: document.getElementById('expirationDate').value,
+                cvv: document.getElementById('cvv').value,
+                name: document.getElementById('name').value,
+                address: document.getElementById('address').value
+            })
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return response.text().then(text => { throw new Error(text); });
+            }
+        }).then(data => {
+            if (data.redirect) {
+                window.location.href = data.redirect;
+            } else {
+                throw new Error('Unexpected response format');
+            }
+        }).catch(error => {
+            console.error('Payment failed:', error);
+            alert('Payment failed: ' + error.message);
+        });
+    });
+
+    window.onload = fetchTransactionItems;
+</script>
+</body>
+</html>
+
+
+

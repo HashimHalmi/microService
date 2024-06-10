@@ -1,0 +1,151 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Sign Up</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Sign Up</h1>-->
+<!--<form id="signupForm">-->
+<!--    <label for="email">Email:</label>-->
+<!--    <input type="email" id="email" required>-->
+<!--    <br>-->
+<!--    <button type="submit">Sign Up</button>-->
+<!--</form>-->
+<!--<script>-->
+<!--    document.getElementById('signupForm').addEventListener('submit', function(event) {-->
+<!--        event.preventDefault();-->
+<!--        fetch('/signup', {-->
+<!--            method: 'POST',-->
+<!--            headers: {-->
+<!--                'Content-Type': 'application/json'-->
+<!--            },-->
+<!--            body: JSON.stringify({-->
+<!--                email: document.getElementById('email').value-->
+<!--            })-->
+<!--        }).then(response => {-->
+<!--            if (response.ok) {-->
+<!--                alert('Sign Up successful! Check your email for the password.');-->
+<!--                window.location.href = 'login.html';-->
+<!--            } else {-->
+<!--                alert('Sign Up failed!');-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            color: #333;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="email"] {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #28a745;
+            color: white;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        button:active {
+            background-color: #1e7e34;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            form {
+                padding: 15px;
+            }
+
+            button {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>Sign Up</h1>
+<form id="signupForm">
+    <label for="email">Email:</label>
+    <input type="email" id="email" required>
+    <br>
+    <button type="submit">Sign Up</button>
+</form>
+<script>
+    document.getElementById('signupForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        fetch('/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: document.getElementById('email').value
+            })
+        }).then(response => {
+            if (response.ok) {
+                alert('Sign Up successful! Check your email for the password.');
+                window.location.href = 'login.html';
+            } else {
+                alert('Sign Up failed!');
+            }
+        });
+    });
+</script>
+</body>
+</html>
